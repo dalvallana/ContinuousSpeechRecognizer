@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin xmlns="http://apache.org/cordova/ns/plugins/1.0" xmlns:android="http://schemas.android.com/apk/res/android"
+    id="org.apache.cordova.continuoussr" version="1.0.0">
+  <engines>
+    <engine name="cordova" version=">=3.0.0" />
+  </engines>
+  
+  <name>ContinuousSpeechRecognizer</name>
+  <description>Continuously recognizes speech input</description>
+  <license>Apache 2.0</license>
+  
+  <js-module src="www/continuoussp.js" name="continuoussp">
+    <clobbers target="continuoussp" /> 
+  </js-module>
+  
+  <platform name="android">
+    <config-file target="res/xml/config.xml" parent="/*">
+      <feature name="ContinuousSpeechRecognizer" >
+        <param name="android-package" value="org.apache.cordova.continuoussr.ContinuousSpeechRecognizer"/>
+      </feature>
+    </config-file>
+
+    <source-file src="ContinuousSpeechRecognizer.java" target-dir="src/org/apache/cordova/continuoussr" />
+    <source-file src="LanguageDetailsChecker.java" target-dir="src/org/apache/cordova/continuoussr" />
+    
+  </platform>
+  
+</plugin>
