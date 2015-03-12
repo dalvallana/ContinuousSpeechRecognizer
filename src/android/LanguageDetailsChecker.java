@@ -1,4 +1,4 @@
-package org.apache.cordova.srplugin;
+package org.apache.cordova.continuoussr;
 
 import java.util.List;
 
