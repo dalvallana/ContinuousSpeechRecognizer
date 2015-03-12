@@ -115,7 +115,7 @@ public class ContinuousSpeechRecognizer extends CordovaPlugin {
             intent.putExtra(RecognizerIntent.EXTRA_PROMPT, prompt);
         }
         sr.startListening(intent);
-        mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+        mAudioManager = (AudioManager) cordova.getActivity().getSystemService(Context.AUDIO_SERVICE);
         mStreamVolume = mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
         mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, 0, 0);
     }
