@@ -19,9 +19,9 @@
         <param name="android-package" value="org.apache.cordova.continuoussr.ContinuousSpeechRecognizer"/>
       </feature>
     </config-file>
-
-    <source-file src="ContinuousSpeechRecognizer.java" target-dir="src/org/apache/cordova/continuoussr" />
-    <source-file src="LanguageDetailsChecker.java" target-dir="src/org/apache/cordova/continuoussr" />
+    
+    <source-file src="src/android/ContinuousSpeechRecognizer.java" target-dir="src/org/apache/cordova/continuoussr" />
+    <source-file src="src/android/LanguageDetailsChecker.java" target-dir="src/org/apache/cordova/continuoussr" />
     
   </platform>
   
