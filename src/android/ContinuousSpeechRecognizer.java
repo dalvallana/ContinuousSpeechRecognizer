@@ -122,7 +122,7 @@ public class ContinuousSpeechRecognizer extends CordovaPlugin {
 
     @Override
     public void onResume(boolean b) {
-        super.onResume();
+        super.onResume(b);
         AppStatus.activityResumed();
         sr.startListening(intent);
         mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, 0, 0);
@@ -130,7 +130,7 @@ public class ContinuousSpeechRecognizer extends CordovaPlugin {
 
     @Override
     public void onPause(boolean b) {
-        super.onPause();
+        super.onPause(b);
         AppStatus.activityPaused();
         sr.stopListening();
         new Handler().postDelayed(new Runnable() {
@@ -143,12 +143,12 @@ public class ContinuousSpeechRecognizer extends CordovaPlugin {
 
     @Override
     public void onDestroy() {
+        super.onDestroy();
         if(sr != null) {
             sr.cancel();
             sr.destroy();
             sr = null;
         }
-        super.onDestroy();
     }
 
     private void returnSpeechResults(ArrayList<String> matches) {
@@ -176,12 +176,12 @@ public class ContinuousSpeechRecognizer extends CordovaPlugin {
             ArrayList<String> matches = new ArrayList<String>();
             ArrayList data = results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
             for (int i = 0; i < data.size(); i++) {
-                matches.add(data.get(i));
+                matches.add((String) data.get(i));
             }            
             if(AppStatus.isActivityVisible()) {
                 sr.startListening(intent);
             }            
-            returnSpeechResults((String) matches);
+            returnSpeechResults(matches);
         }
         public void onPartialResults(Bundle partialResults) {
         }
