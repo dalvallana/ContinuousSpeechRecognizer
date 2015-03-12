@@ -19,6 +19,7 @@ import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
 import android.util.Log;
+import android.os.Bundle;
 
 /**
  * Style and such borrowed from the TTS and PhoneListener plugins
@@ -101,7 +102,7 @@ public class ContinuousSpeechRecognizer extends CordovaPlugin {
             Log.e(LOG_TAG, String.format("startSpeechRecognitionActivity exception: %s", e.toString()));
         }
 
-        sr = SpeechRecognizer.createSpeechRecognizer(this);
+        sr = SpeechRecognizer.createSpeechRecognizer(cordova.getActivity().getBaseContext());
         sr.setRecognitionListener(new Listener());
         intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
@@ -120,7 +121,7 @@ public class ContinuousSpeechRecognizer extends CordovaPlugin {
     }
 
     @Override
-    protected void onResume() {
+    public void onResume(boolean b) {
         super.onResume();
         AppStatus.activityResumed();
         sr.startListening(intent);
@@ -128,7 +129,7 @@ public class ContinuousSpeechRecognizer extends CordovaPlugin {
     }
 
     @Override
-    protected void onPause() {
+    public void onPause(boolean b) {
         super.onPause();
         AppStatus.activityPaused();
         sr.stopListening();
@@ -180,7 +181,7 @@ public class ContinuousSpeechRecognizer extends CordovaPlugin {
             if(AppStatus.isActivityVisible()) {
                 sr.startListening(intent);
             }            
-            returnSpeechResults(matches);
+            returnSpeechResults((String) matches);
         }
         public void onPartialResults(Bundle partialResults) {
         }
