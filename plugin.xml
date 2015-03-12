@@ -9,8 +9,8 @@
   <description>Continuously recognizes speech input</description>
   <license>Apache 2.0</license>
   
-  <js-module src="www/continuoussp.js" name="continuoussp">
-    <clobbers target="continuoussp" /> 
+  <js-module src="www/continuoussr.js" name="continuoussr">
+    <clobbers target="continuoussr" /> 
   </js-module>
   
   <platform name="android">
