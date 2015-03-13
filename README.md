@@ -11,7 +11,8 @@ Compatible with Cordova 3.0.
 
 You must provide the proper permissions in your app's `AndroidManifest.xml` file like this:
 
-```<uses-permission android:name="android.permission.RECORD_AUDIO" />
+```xml
+<uses-permission android:name="android.permission.RECORD_AUDIO" />
 <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
 ```
 
@@ -21,7 +22,8 @@ For free community support, please use the issue tracker.
 
 Installation for cordova>=3.0.0
 -----------------------------------------------------
-```cordova platform add android
+```
+cordova platform add android
 cordova plugin add https://github.com/daao87/ContinuousSpeechRecognizer
 ```
   
