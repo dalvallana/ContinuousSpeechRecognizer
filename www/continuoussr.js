@@ -30,7 +30,7 @@ function ContinuousSpeechRecognizer() {
  * @param promptString An optional string to prompt the user during recognition
  */
 ContinuousSpeechRecognizer.prototype.startRecognize = function(successCallback, errorCallback, maxMatches, promptString, language) {
-    return cordova.exec(successCallback, errorCallback, "ContinuousSpeechRecognizer", "startRecognize", [maxMatches, promptString, language]);
+    return cordova.exec(successCallback, errorCallback, "ContinuousSpeechRecognizer", "startRecognize", [maxMatches, language]);
 };
 
 /**

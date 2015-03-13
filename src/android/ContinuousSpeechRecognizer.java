@@ -67,11 +67,10 @@ public class ContinuousSpeechRecognizer extends CordovaPlugin {
     /**
      * Fire an intent to start the speech recognition activity.
      *
-     * @param args Argument array with the following string args: [req code][number of matches][prompt string]
+     * @param args Argument array with the following string args: [req code][number of matches]
      */
     private void startSpeechRecognitionActivity(JSONArray args) {
         int maxMatches = 0;
-        String prompt = "";
         String language = Locale.getDefault().toString();
 
         try {
@@ -80,10 +79,7 @@ public class ContinuousSpeechRecognizer extends CordovaPlugin {
                 maxMatches = Integer.parseInt(temp);
             }
             if (args.length() > 1) {
-                prompt = args.getString(1);
-            }
-            if (args.length() > 2) {
-                language = args.getString(2);
+                language = args.getString(1);
             }
         }
         catch (Exception e) {
@@ -96,9 +92,6 @@ public class ContinuousSpeechRecognizer extends CordovaPlugin {
         intent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE,"voice.recognition.test");
         if (maxMatches > 0) {
             intent.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, maxMatches);
-        }
-        if (!prompt.equals("")) {
-            intent.putExtra(RecognizerIntent.EXTRA_PROMPT, prompt);
         }
 
         cordova.getActivity().runOnUiThread(new Runnable() {
