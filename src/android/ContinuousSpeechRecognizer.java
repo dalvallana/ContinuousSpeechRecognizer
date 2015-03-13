@@ -102,19 +102,24 @@ public class ContinuousSpeechRecognizer extends CordovaPlugin {
             Log.e(LOG_TAG, String.format("startSpeechRecognitionActivity exception: %s", e.toString()));
         }
 
-        sr = SpeechRecognizer.createSpeechRecognizer(cordova.getActivity().getBaseContext());
-        sr.setRecognitionListener(new Listener());
-        intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
-        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
-        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, language);
-        intent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE,"voice.recognition.test");
-        if (maxMatches > 0) {
-            intent.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, maxMatches);
-        }
-        if (!prompt.equals("")) {
-            intent.putExtra(RecognizerIntent.EXTRA_PROMPT, prompt);
-        }
-        sr.startListening(intent);
+        cordova.getActivity().runOnUiThread(new Runnable() {
+                public void run() {
+                    sr = SpeechRecognizer.createSpeechRecognizer(cordova.getActivity().getBaseContext());
+                    sr.setRecognitionListener(new Listener());
+                    intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+                    intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+                    intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, language);
+                    intent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE,"voice.recognition.test");
+                    if (maxMatches > 0) {
+                        intent.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, maxMatches);
+                    }
+                    if (!prompt.equals("")) {
+                        intent.putExtra(RecognizerIntent.EXTRA_PROMPT, prompt);
+                    }
+                    sr.startListening(intent);
+                }
+            });
+        
         mAudioManager = (AudioManager) cordova.getActivity().getSystemService(Context.AUDIO_SERVICE);
         mStreamVolume = mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
         mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, 0, 0);
