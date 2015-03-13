@@ -5,6 +5,7 @@ import java.util.Locale;
 
 import org.json.JSONArray;
 import org.apache.cordova.CordovaPlugin;
+import org.apache.cordova.PluginResult;
 import org.apache.cordova.CallbackContext;
 
 import android.app.Activity;
@@ -40,40 +41,30 @@ public class ContinuousSpeechRecognizer extends CordovaPlugin {
     private AudioManager mAudioManager;
     private int mStreamVolume = 0;
 
-    //@Override
     public boolean execute(String action, JSONArray args, CallbackContext callbackContext) {
-		Boolean isValidAction = true;
-
-    	this.callbackContext= callbackContext;
-
-		// Action selector
-    	if ("startRecognize".equals(action)) {
-            // recognize speech
+        Boolean isValidAction = true;
+        this.callbackContext = callbackContext;
+        if ("startRecognize".equals(action)) {
             startSpeechRecognitionActivity(args);     
         } else if ("getSupportedLanguages".equals(action)) {
-        	getSupportedLanguages();
+            getSupportedLanguages();
         } else {
-            // Invalid action
-        	this.callbackContext.error("Unknown action: " + action);
-        	isValidAction = false;
-        }
-    	
+            this.callbackContext.error("Unknown action: " + action);
+            isValidAction = false;
+        }       
         return isValidAction;
-
     }
 
-    // Get the list of supported languages
     private void getSupportedLanguages() {
-    	if (languageDetailsChecker == null){
-    		languageDetailsChecker = new LanguageDetailsChecker(callbackContext);
-    	}
-    	// Create and launch get languages intent
-    	Intent detailsIntent = new Intent(RecognizerIntent.ACTION_GET_LANGUAGE_DETAILS);
-    	cordova.getActivity().sendOrderedBroadcast(detailsIntent, null, languageDetailsChecker, null, Activity.RESULT_OK, null, null);
-		
-	}
+        if (languageDetailsChecker == null){
+            languageDetailsChecker = new LanguageDetailsChecker(callbackContext);
+        }
+        Intent detailsIntent = new Intent(RecognizerIntent.ACTION_GET_LANGUAGE_DETAILS);
+        cordova.getActivity().sendOrderedBroadcast(detailsIntent, null, languageDetailsChecker, null, Activity.RESULT_OK, null, null);
+        
+    }
 
-	/**
+    /**
      * Fire an intent to start the speech recognition activity.
      *
      * @param args Argument array with the following string args: [req code][number of matches][prompt string]
@@ -85,17 +76,14 @@ public class ContinuousSpeechRecognizer extends CordovaPlugin {
 
         try {
             if (args.length() > 0) {
-            	// Maximum number of matches, 0 means the recognizer decides
                 String temp = args.getString(0);
                 maxMatches = Integer.parseInt(temp);
             }
             if (args.length() > 1) {
-            	// Optional text prompt
                 prompt = args.getString(1);
             }
             if (args.length() > 2) {
-            	// Optional language specified
-            	language = args.getString(2);
+                language = args.getString(2);
             }
         }
         catch (Exception e) {
@@ -114,31 +102,62 @@ public class ContinuousSpeechRecognizer extends CordovaPlugin {
         }
 
         cordova.getActivity().runOnUiThread(new Runnable() {
-                public void run() {
-                    sr = SpeechRecognizer.createSpeechRecognizer(cordova.getActivity().getBaseContext());
-                    sr.setRecognitionListener(new Listener());                    
-                    sr.startListening(intent);
-                }
-            });
+            public void run() {
+                sr = SpeechRecognizer.createSpeechRecognizer(cordova.getActivity().getBaseContext());
+                sr.setRecognitionListener(new Listener());                    
+                sr.startListening(intent);
+            }
+        });
         
         mAudioManager = (AudioManager) cordova.getActivity().getSystemService(Context.AUDIO_SERVICE);
         mStreamVolume = mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
-        mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, 0, 0);
+        muteStreamVolume();
     }
 
     @Override
     public void onResume(boolean b) {
         super.onResume(b);
         AppStatus.activityResumed();
-        sr.startListening(intent);
-        mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, 0, 0);
+        cordova.getActivity().runOnUiThread(new Runnable() {
+            public void run() {
+                sr.startListening(intent);
+            }
+        });
+        muteStreamVolume();
     }
 
     @Override
     public void onPause(boolean b) {
         super.onPause(b);
         AppStatus.activityPaused();
-        sr.stopListening();
+        cordova.getActivity().runOnUiThread(new Runnable() {
+            public void run() {
+                sr.stopListening();
+            }
+        });
+        setStreamVolumeBack();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        cordova.getActivity().runOnUiThread(new Runnable() {
+            public void run() {
+                if(sr != null) {
+                    sr.cancel();
+                    sr.destroy();
+                    sr = null;
+                }
+            }
+        });
+        setStreamVolumeBack();
+    }
+
+    private void muteStreamVolume() {
+        mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, 0, 0);
+    }
+
+    private void setStreamVolumeBack() {
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -147,19 +166,17 @@ public class ContinuousSpeechRecognizer extends CordovaPlugin {
         }, 300);
     }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        if(sr != null) {
-            sr.cancel();
-            sr.destroy();
-            sr = null;
-        }
-    }
-
     private void returnSpeechResults(ArrayList<String> matches) {
         JSONArray jsonMatches = new JSONArray(matches);
         this.callbackContext.success(jsonMatches);
+    }
+
+    private void returnProgressResults(ArrayList<String> matches) {
+        JSONArray jsonMatches = new JSONArray(matches);
+
+        PluginResult progressResult = new PluginResult(PluginResult.Status.OK, jsonMatches);
+        progressResult.setKeepCallback(true);
+        callbackContext.sendPluginResult(progressResult);
     }
 
     class Listener implements RecognitionListener {
@@ -175,7 +192,11 @@ public class ContinuousSpeechRecognizer extends CordovaPlugin {
         }
         public void onError(int error) {
             if(AppStatus.isActivityVisible()) {
-                sr.startListening(intent);
+                cordova.getActivity().runOnUiThread(new Runnable() {
+                    public void run() {
+                        sr.startListening(intent);
+                    }
+                });
             }
         }
         public void onResults(Bundle results) {
@@ -185,9 +206,13 @@ public class ContinuousSpeechRecognizer extends CordovaPlugin {
                 matches.add((String) data.get(i));
             }            
             if(AppStatus.isActivityVisible()) {
-                sr.startListening(intent);
+                cordova.getActivity().runOnUiThread(new Runnable() {
+                    public void run() {
+                        sr.startListening(intent);
+                    }
+                });
             }            
-            returnSpeechResults(matches);
+            returnProgressResults(matches);
         }
         public void onPartialResults(Bundle partialResults) {
         }
@@ -196,7 +221,7 @@ public class ContinuousSpeechRecognizer extends CordovaPlugin {
     }
 
     static class AppStatus {
-        private static boolean activityVisible;
+        private static boolean activityVisible = true;
 
         public static boolean isActivityVisible() {
             return activityVisible;
