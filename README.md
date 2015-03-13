@@ -1,6 +1,6 @@
 Android ContinuousSpeechRecognizer plugin for Cordova/Phonegap
 ===================================
-This plugin provides access to the SpeechRecognizer API for Android devices. It allows for continuous listening, so everytime the API detects the user said something, it will send to your javascript what was detected. This plugin also mutes the sound that the SpeechRecognizer makes.
+This plugin provides access to the SpeechRecognizer API for Android devices. It allows for continuous listening, so everytime the API detects the user said something, it will send to your javascript what was detected. This plugin also removes the default API's user interface and mutes the sound that it makes.
 
 This plugin is a modification (or extension) of the [SpeechRecognizer](https://github.com/poiuytrez/SpeechRecognizer) plugin.
 
