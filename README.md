@@ -24,7 +24,7 @@ Installation for cordova>=3.0.0
 -----------------------------------------------------
 ```
 cordova platform add android
-cordova plugin add https://github.com/daao87/ContinuousSpeechRecognizer
+cordova plugin add https://github.com/daao87/ContinuousSpeechRecognizer.git
 ```
   
 
