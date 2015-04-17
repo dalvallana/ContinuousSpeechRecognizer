@@ -4,6 +4,8 @@ This plugin provides access to the SpeechRecognizer API for Android devices. It 
 
 This plugin is a modification (or extension) of the [SpeechRecognizer](https://github.com/poiuytrez/SpeechRecognizer) plugin.
 
+With this plugin I made [this app](https://play.google.com/store/apps/details?id=com.ionicframework.lumos784229).
+
 Requirements
 -------------
 Android 2.2 (API level 8) is required  
